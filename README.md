@@ -357,6 +357,8 @@ Everyday office wording ("text me when the truck arrives", "the invoice is past 
 - 📦 **Minimal permissions:** `storage`, the webmail sites and their own image servers (to read QR codes in pictures), the scam-site list addresses (`raw.githubusercontent.com`, `urlhaus.abuse.ch`, `phishing.army`), and an AI provider's address only when you save one.
 - 🧹 **Stored locally:** settings, keys, your reports, which Learn posts you've opened, the scam-site lists, contact memory (scrambled fingerprints, not names or addresses), and each tab's verdict until the browser closes. **Settings → Privacy → Clear all** wipes it and revokes AI permissions.
 
+The full [privacy policy](PRIVACY.md) lists everything the extension reads, keeps and sends. Off the Hook's use of what it reads from your webmail complies with the [Chrome Web Store User Data Policy](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq), including the Limited Use requirements.
+
 ## AI mode (optional)
 
 Off by default. Turning it on shows a privacy notice you must accept.
@@ -439,11 +441,23 @@ No-code options live in **Settings**: sensitivity, company domain, trusted sende
 Plain JavaScript, **no build step, no dependencies.**
 
 ```bash
-node --test test/            # run the test suite
+node --test test/analyzer.test.js   # run the test suite (or: npm test)
 python -m http.server 8765   # or open http://localhost:8765/test/ in a browser
 ```
 
 `http://localhost:8765/dev/demo.html` is a Gmail look-alike that runs the real content scripts on fictional emails (with a simulated AI mode). It's the fastest way to try changes. Analysis takes a few milliseconds per email and stays under 200 ms even for a 64 KB email with 200 links.
+
+<details>
+<summary><b>Publishing to the Chrome Web Store</b></summary>
+<br>
+
+```bash
+python scripts/build_zip.py    # dist/off-the-hook-<version>.zip: the upload, with only what the extension runs
+node scripts/store_assets.js   # store/*.png: 5 screenshots (1280x800) and 2 promo tiles (440x280, 1400x560)
+```
+
+[`store/LISTING.md`](store/LISTING.md) has the rest, in the order the dashboard asks for it: the description, the permission justifications, the privacy answers and the reviewer's test steps. The zip script checks the manifest against the store's limits first. The image script photographs the real UI (the demo page and the extension's own pages) and needs Playwright, which is not a dependency of the extension: `npm install --no-save playwright && npx playwright install chromium`.
+</details>
 
 <details>
 <summary><b>Project structure</b></summary>
@@ -460,9 +474,10 @@ python -m http.server 8765   # or open http://localhost:8765/test/ in a browser
 ├── score/               scoreboard page
 ├── learn/               Learn page · posts/ (Markdown lessons) · HOW-TO-WRITE.md
 ├── icons/  docs/        icons, logo, wordmark · README banner and screenshots
+├── store/               Chrome Web Store screenshots, promo tiles and listing text
 ├── test/                unit tests + sample emails (Node and browser runners)
-├── dev/                 demo page, chrome API stub, brand generator
-└── scripts/             Firefox build, brand image saver
+├── dev/                 demo page, chrome API stub, brand generator, store art layouts
+└── scripts/             Firefox build, store zip, store images, brand image saver
 ```
 </details>
 
