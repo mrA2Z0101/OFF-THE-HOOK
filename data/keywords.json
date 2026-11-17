@@ -1,0 +1,125 @@
+{
+  "_readme": "Off the Hook phrase lists. Matching ignores upper/lower case and extra spaces, and only matches whole words. Start an entry with re: to write a regular expression instead of a plain phrase. Each category's ruleId must exist in shared/config.js (that is where its score weight lives). After editing, reload the extension on chrome://extensions.",
+  "categories": {
+    "urgency": {
+      "ruleId": "kw_urgency",
+      "title": "Urgent or threatening language",
+      "explanation": "Phishing emails rush you so you act before thinking. Real companies rarely threaten to close your account within hours.",
+      "phrases": [
+        "act now", "act immediately", "immediate action required", "action required", "urgent action",
+        "urgent response", "respond immediately", "reply immediately", "within 24 hours",
+        "re:within \\d{1,3} ?(hours|hrs|days)", "account suspended", "account has been suspended",
+        "account will be suspended", "account will be closed", "account has been locked", "account locked",
+        "account has been disabled", "account will be disabled", "will be terminated", "will be deactivated",
+        "final notice", "final warning", "last chance", "last warning", "expires today", "will expire today",
+        "unusual activity", "unusual sign-in activity", "suspicious activity",
+        "re:(detected|noticed|attempted) unauthori[sz]ed (access|login|sign-in)", "unauthorized access to your account",
+        "unauthorized access attempt", "unauthorized login", "unauthorized transaction", "failure to comply", "legal action",
+        "awaiting your response", "awaiting your reply", "response needed", "reply needed",
+        "avoid suspension", "avoid deactivation", "temporarily suspended", "your account has been limited",
+        "access will be revoked", "your mailbox is full", "mailbox storage is full", "password will expire",
+        "password expires today", "payment failed", "payment declined", "delivery failed",
+        "package could not be delivered", "missed delivery", "pending delivery", "re-delivery fee",
+        "time-sensitive", "time sensitive", "immediately or", "permanently deleted"
+      ]
+    },
+    "credential_request": {
+      "ruleId": "kw_credential",
+      "title": "Asks for passwords or personal details",
+      "explanation": "Legitimate organizations do not ask you to confirm passwords, card numbers, or ID numbers by email.",
+      "phrases": [
+        "verify your account", "verify your identity", "confirm your identity", "confirm your account",
+        "validate your account", "verify your information", "update your account information",
+        "update your payment", "update your payment information", "update your billing",
+        "update your billing information", "confirm your password", "enter your password",
+        "provide your password", "login credentials", "log in credentials", "sign in to verify",
+        "log in to verify", "login to verify", "re:(re-?enter|provide|confirm|send) your (password|pin|login|credentials|passcode)",
+        "social security number", "ssn", "card number", "credit card number", "debit card number", "cvv",
+        "pin number", "bank account number", "routing number", "mother's maiden name",
+        "re:(send|share|forward|tell) (me|us) the (code|otp|verification code)", "one-time passcode",
+        "click the link below to verify", "click here to verify", "unlock your account",
+        "reactivate your account", "restore your account", "restore access", "confirm your details",
+        "verify your details", "verify your email account", "re-validate", "revalidate"
+      ]
+    },
+    "money_request": {
+      "ruleId": "kw_money",
+      "title": "Requests money, gift cards, or payment changes",
+      "explanation": "Requests for gift cards, wire transfers, crypto, or new bank details are a common way scammers steal money.",
+      "phrases": [
+        "gift card", "gift cards", "itunes card", "google play card", "steam card", "apple gift card",
+        "scratch the back", "wire transfer", "bank transfer", "wire the funds", "send money", "bitcoin",
+        "btc wallet", "crypto wallet", "cryptocurrency", "usdt", "ethereum", "payment details have changed",
+        "changed our bank details", "new bank details", "update our banking", "updated bank account",
+        "new account details", "change of bank", "change in banking", "invoice overdue", "overdue invoice",
+        "outstanding invoice", "outstanding balance", "past due", "unpaid invoice", "payment is overdue",
+        "tax refund", "pending refund", "claim your refund", "processing fee", "release fee",
+        "western union", "moneygram", "urgent payment", "process a payment"
+      ]
+    },
+    "authority_pressure": {
+      "ruleId": "kw_authority",
+      "title": "Executive or authority pressure",
+      "explanation": "\"Boss\" scams pretend to be a manager who needs a quick, secret favor. Check by calling the person on a number you already know.",
+      "phrases": [
+        "quick favor", "quick favour", "are you at your desk", "are you available", "are you free",
+        "do you have a moment", "keep this confidential", "keep this between us", "strictly confidential",
+        "don't tell anyone", "do not tell anyone", "do not discuss", "i'm in a meeting", "i am in a meeting",
+        "i'm in a conference", "can't talk right now", "cannot take calls", "can't take calls",
+        "need you to handle", "need this done today", "i need a favor", "i need a favour",
+        "urgent and confidential", "discreet", "surprise for the staff"
+      ]
+    },
+    "contact_request": {
+      "ruleId": "kw_contact_request",
+      "title": "Asks for your phone number or to switch to texting",
+      "explanation": "Scammers ask for your cell number so they can continue by text message, where email filters can't see them, and then ask for gift cards or payments. A real colleague or business can look up your number.",
+      "phrases": [
+        "re:(what['’]?s|what is|send me|send|share|give me|provide|confirm|update|reply with)\\s+(me\\s+)?(your|you|ur|yo|you['’]?re)\\s+((main|best|personal|direct|current|private|active|cell|mobile|whatsapp)\\s+)*(mobile|cell|phone|whatsapp|contact|personal)\\s*(phone\\s*)?(number|no\\.?|#|num)",
+        "re:\\b(send|text|share|give|provide|forward|need|get|want|drop)\\b[^.?!\\n]{0,20}?\\b(your|you|ur|yo)\\s+((best|main|personal|direct|current|private|active|cell|mobile)\\s+)*(phone|cell|mobile|whatsapp|personal|direct|contact)(\\s+phone)?\\s*(number|no\\.?|#|num)\\b",
+        "re:\\b(send|text|give|share|need|get|want|drop)\\s+(me\\s+)?(your|you|ur|yo)\\s+(number|digits|cell)\\b",
+        "your mobile number", "your cell number", "your cell phone number", "your personal number",
+        "your personal cell", "your whatsapp number", "your direct number", "your phone number",
+        "alternative phone", "alternate phone", "alternative number", "alternate number", "my new number",
+        "my new phone", "new phone number", "text me", "text me back", "can you text", "whatsapp me",
+        "contact me on whatsapp", "active contact number", "update personal number", "personal number update",
+        "contact info update", "contact information update", "update your contact information"
+      ]
+    },
+    "prize_reward": {
+      "ruleId": "kw_prize",
+      "title": "Prize, reward, or lottery language",
+      "explanation": "Unexpected winnings, inheritances, or rewards are classic bait to get your details or a \"fee\".",
+      "phrases": [
+        "congratulations you have won", "you have won", "you've won", "you are a winner", "lottery",
+        "jackpot", "claim your prize", "claim your reward", "prize money", "free gift", "selected to receive",
+        "you have been selected", "exclusive reward", "cash prize", "inheritance", "beneficiary",
+        "unclaimed funds", "million dollars", "re:\\$\\s?\\d{1,3}(,\\d{3}){2,}", "100% free", "risk-free",
+        "survey reward", "loyalty reward", "reward points expire", "you are eligible to receive"
+      ]
+    },
+    "ai_manipulation": {
+      "ruleId": "kw_ai_manipulation",
+      "title": "Hidden instructions aimed at AI filters",
+      "explanation": "The email contains text that tries to give orders to AI assistants or spam filters (for example \"ignore previous instructions\"). Legitimate email never needs to do this.",
+      "phrases": [
+        "ignore previous instructions", "ignore all previous instructions", "ignore the above instructions",
+        "disregard previous instructions", "disregard all prior instructions", "note to ai", "note to ai assistants",
+        "attention ai", "ai assistant:", "if you are an ai", "if you are a language model", "as an ai language model",
+        "re:(classify|mark|label|treat) this (email|message) as (safe|legitimate|not spam|not phishing)",
+        "re:system\\s*prompt", "do not flag this email", "this email is not phishing", "this is not a phishing email"
+      ]
+    },
+    "generic_greeting": {
+      "ruleId": "kw_generic_greeting",
+      "title": "Generic greeting",
+      "explanation": "Companies you do business with usually use your name. \"Dear customer\" suggests a mass-mailed scam.",
+      "phrases": [
+        "dear customer", "dear valued customer", "dear user", "dear client", "dear member",
+        "dear account holder", "dear sir/madam", "dear sir or madam", "dear beneficiary", "dear friend",
+        "hello user", "dear email user", "dear webmail user", "dear account owner", "dear user account",
+        "re:\\b(dear|hello|hi)\\s+[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+"
+      ]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Off the Hook Scoreboard</title>
+  <script src="../shared/brand.js" data-adopt></script>
+  <link rel="stylesheet" href="../options/options.css">
+  <link rel="stylesheet" href="../scan/scan.css">
+  <link rel="stylesheet" href="score.css">
+</head>
+<body>
+  <header class="ot-bar ot-bar-lg">
+    <img class="ot-logo" src="../icons/logo512.png" alt="" width="72" height="72">
+    <div class="hero-text">
+      <h1 class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook" width="300" height="64"><span class="ot-title-text" aria-hidden="true">Off the Hook</span></h1>
+      <p class="sub">How well do the checks work on <em>your</em> email? Give it phishing and normal emails, and see what it catches and what it gets wrong. Everything stays on this computer.</p>
+    </div>
+    <span class="mode">Scoreboard</span>
+  </header>
+
+  <main id="main" class="scan">
+    <section aria-labelledby="add-h">
+      <h2 id="add-h">Add test emails</h2>
+      <p class="help">Save emails as <strong>.eml</strong> files: in Outlook on the web, open the email, click <strong>… → Save as</strong> (or Download); in Gmail, <strong>⋮ → Download message</strong>. Keep phishing (your junk folder is a good source) and normal ones apart.</p>
+      <div class="buckets">
+        <div class="bucket dropzone" id="phishDrop" data-label="phish">
+          <div class="dz-art" aria-hidden="true">✕</div>
+          <h3>Phishing emails</h3>
+          <p><span id="phishCount">0</span> added</p>
+          <div class="row-actions"><button type="button" class="primary" data-pick="phish">Add .eml files</button></div>
+        </div>
+        <div class="bucket dropzone lime" id="legitDrop" data-label="legit">
+          <div class="dz-art" aria-hidden="true">✓</div>
+          <h3>Normal emails</h3>
+          <p><span id="legitCount">0</span> added</p>
+          <div class="row-actions"><button type="button" class="primary" data-pick="legit">Add .eml files</button></div>
+        </div>
+      </div>
+      <input type="file" id="files" accept=".eml,message/rfc822" multiple hidden>
+      <input type="file" id="folder" webkitdirectory hidden>
+      <div class="row-actions">
+        <button type="button" id="pickFolder">Add a folder…</button>
+        <button type="button" id="useReports">Add my reports</button>
+        <button type="button" class="ghost" id="clearAll">Start over</button>
+      </div>
+      <p class="help">A folder can hold sub-folders named <code>phish</code> (or scam, spam) and <code>normal</code> (or legit, safe, good); files are sorted by folder name. <strong>Add my reports</strong> uses your "It's phishing" / "It's safe" reports that saved the email text (turn that on in Settings → Your reports).</p>
+      <p id="addStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <div id="results" aria-live="polite"></div>
+  </main>
+
+  <script src="../shared/config.js"></script>
+  <script src="../shared/domain-utils.js"></script>
+  <script src="../shared/analyzer.js"></script>
+  <script src="../shared/qr.js"></script>
+  <script src="../shared/eml.js"></script>
+  <script src="../shared/scoreboard.js"></script>
+  <script src="score.js"></script>
+</body>
+</html>

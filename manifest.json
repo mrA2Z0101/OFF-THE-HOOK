@@ -1,0 +1,94 @@
+{
+  "manifest_version": 3,
+  "name": "Off the Hook",
+  "short_name": "Off the Hook",
+  "version": "1.0.0",
+  "description": "Flags signs of phishing in the email you have open in Gmail or Outlook on the web. Works offline with built-in rules; optional AI mode.",
+  "minimum_chrome_version": "111",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Off the Hook",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://*.googleusercontent.com/*",
+    "https://outlook.live.com/*",
+    "https://outlook.office.com/*",
+    "https://outlook.office365.com/*",
+    "https://outlook.cloud.microsoft/*",
+    "https://*.office.net/*",
+    "https://raw.githubusercontent.com/*",
+    "https://urlhaus.abuse.ch/*",
+    "https://phishing.army/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*",
+        "https://outlook.cloud.microsoft/*"
+      ],
+      "js": [
+        "content/adapters/base.js",
+        "content/adapters/gmail.js",
+        "content/adapters/outlook.js",
+        "shared/brand.js",
+        "content/highlighter.js",
+        "content/ui.js",
+        "content/linkcard.js",
+        "content/listscan.js",
+        "shared/qr.js",
+        "content/qrscan.js",
+        "shared/sensitive.js",
+        "content/replyguard.js",
+        "content/content.js"
+      ],
+      "css": [
+        "content/content.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/icon48.png",
+        "icons/wordmark.png"
+      ],
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*",
+        "https://outlook.cloud.microsoft/*"
+      ]
+    }
+  ]
+}

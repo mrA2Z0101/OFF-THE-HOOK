@@ -1,0 +1,29 @@
+{
+  "about": "List every post file here. Posts show newest first (by their date); posts with the same date keep this order. See learn/HOW-TO-WRITE.md.",
+  "posts": [
+    "clicked-it-first-5-minutes.md",
+    "fake-bid-invitations.md",
+    "never-share-the-code.md",
+    "email-talks-to-your-ai.md",
+    "it-knows-my-project.md",
+    "fake-ai-tools.md",
+    "the-perfect-invoice.md",
+    "bank-change-call-back.md",
+    "fake-shipping-notices.md",
+    "fake-docusign.md",
+    "why-gift-cards.md",
+    "qr-codes.md",
+    "look-alike-letters.md",
+    "reply-to-switch.md",
+    "files-that-lie.md",
+    "padlock-doesnt-mean-safe.md",
+    "sign-in-prompts-you-didnt-start.md",
+    "fake-it-helpdesk.md",
+    "text-message-scams.md",
+    "fake-recruiters.md",
+    "inside-the-company.md",
+    "ai-writes-perfect-english.md",
+    "the-10-second-check.md",
+    "your-boss-can-be-faked.md"
+  ]
+}

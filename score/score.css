@@ -1,0 +1,24 @@
+/* Scoreboard layout only; everything else comes from the shared design system and the file checker page. */
+.buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+.bucket { padding: 18px 14px 14px; border-color: var(--phishing-text); }
+.bucket.lime { border-color: var(--lime-text); }
+.bucket .dz-art { font-size: 34px; color: var(--phishing-text); }
+.bucket.lime .dz-art { color: var(--lime-text); }
+.bucket h3 { margin: 4px 0 2px; font-size: 18px; color: var(--fg); }
+.bucket p { margin: 0; }
+.bucket.over { background: color-mix(in srgb, var(--pink) 10%, var(--card)); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 10px 0 6px; }
+.stat { background: var(--card); border: 2px solid var(--line); border-left: 6px solid var(--vc); border-radius: 14px; padding: 14px 16px; box-shadow: 4px 4px 0 var(--edge); }
+.stat .big { font: italic 900 46px/1 Impact, "Arial Black", sans-serif; color: var(--vtext, var(--fg)); }
+.stat .what { font-weight: 800; margin-top: 4px; }
+.stat .more { color: var(--muted); font-size: 13px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+.filters button[aria-pressed="true"] { background: var(--lime); color: var(--ink); border-color: var(--ink); }
+.outcome { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 900; text-transform: uppercase; border: 1.5px solid var(--ink); white-space: nowrap; }
+.outcome.missed, .outcome.false_alarm { background: #e00000; color: #fff; }
+.outcome.caught, .outcome.ok { background: var(--lime); color: #111; }
+td .reasons { margin: 0; padding-left: 16px; color: var(--muted); font-size: 12px; }
+td.verdict-cell { white-space: nowrap; font-weight: 800; }
+td.verdict-cell.phishing { color: var(--phishing-text); } td.verdict-cell.suspicious { color: var(--suspicious-text); } td.verdict-cell.safe { color: var(--safe-text); }
+@media (max-width: 720px) { .buckets { grid-template-columns: 1fr; } }

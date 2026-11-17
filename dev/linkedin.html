@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Off the Hook: LinkedIn carousel</title>
+  <!-- The extension's own design system and in-page styles, so every mockup matches the real UI. -->
+  <script src="../shared/brand.js" data-adopt></script>
+  <link rel="stylesheet" href="../content/content.css">
+  <style>
+    /* Print as 1080x1350 pages (LinkedIn's portrait carousel size). Built with:
+       msedge --headless --print-to-pdf=docs/Off-the-Hook-LinkedIn.pdf dev/linkedin.html */
+    @page { size: 1080px 1350px; margin: 0; }
+    /* Always the dark "street" theme, even though printing reports a light color scheme. */
+    :root {
+      --bg: #17181a; --card: #1b1c1f; --fg: #f2f3ee; --muted: #a4a9ad; --line: #383b40; --soft: #24272b;
+      --edge: #000000; --btn-border: #4a4e55; --lime-text: #a6ff00; --pink-text: #ff5fa2;
+      --safe-text: #a6ff00; --suspicious-text: #ffb020; --phishing: #ff3b3b; --phishing-text: #ff6b6b;
+      --ai: #ff2e88; --focus: #ff2e88; color-scheme: dark;
+    }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    html, body { margin: 0; background: #101112; }
+    body { font-family: system-ui, "Segoe UI", Roboto, sans-serif; color: var(--fg); }
+
+    .slide {
+      width: 1080px; height: 1350px; position: relative; overflow: hidden; break-after: page;
+      background:
+        radial-gradient(circle at 12% 30%, rgba(166,255,0,.08) 0 2px, transparent 3px) 0 0 / 46px 46px,
+        radial-gradient(circle at 70% 60%, rgba(255,46,136,.08) 0 1.5px, transparent 2.5px) 0 0 / 34px 34px,
+        #141517;
+    }
+    .slide:last-child { break-after: auto; }
+
+    /* The extension's header bar, slide-sized. */
+    .sbar { position: absolute; left: 0; right: 0; top: 0; padding: 22px 64px; gap: 16px; border-bottom-width: 6px; }
+    .sbar .ot-logo { width: 54px; height: 54px; filter: drop-shadow(3px 3px 0 #000); }
+    .sbar .ot-title { flex: 1; }
+    .sbar .ot-wordmark { height: 46px; }
+    .sbar .mode { font-size: 20px; padding: 5px 16px; border-width: 2px; }
+
+    .content { position: absolute; left: 64px; right: 64px; top: 152px; bottom: 112px; display: flex; flex-direction: column; gap: 26px; }
+    .kicker { font: italic 900 26px/1 Impact, "Arial Black", sans-serif; color: var(--pink-text); text-transform: uppercase; letter-spacing: .07em; }
+    .title { margin: 0; font: italic 900 86px/.98 Impact, "Arial Black", "Segoe UI Black", sans-serif; text-transform: uppercase;
+      letter-spacing: .01em; text-shadow: 4px 4px 0 #000; }
+    .title .lime { color: var(--lime); } .title .pink { color: var(--pink); }
+    .rule { width: 240px; height: 10px; background: var(--pink); border-radius: 5px; box-shadow: 3px 3px 0 #000; }
+    .lead { margin: 0; font-size: 33px; line-height: 1.42; color: #d6d9d2; }
+    .lead b { color: var(--fg); }
+    .lead .hl { color: var(--lime); font-weight: 800; }
+
+    .foot { position: absolute; left: 64px; right: 64px; bottom: 40px; display: flex; justify-content: space-between; align-items: center;
+      font-size: 22px; color: var(--muted); font-weight: 700; }
+    .swipe { color: var(--lime); font: italic 900 30px/1 Impact, "Arial Black", sans-serif; text-transform: uppercase; letter-spacing: .05em;
+      text-shadow: 2px 2px 0 #000; }
+
+    .stage { position: relative; flex: 1; min-height: 0; }
+
+    /* ---- mockups (real brand classes, scaled up) ---- */
+    .mail { width: 450px; background: #26272b; border: 1px solid #34363b; border-radius: 12px; padding: 16px 20px;
+      font: 15px/1.55 Arial, sans-serif; color: #e3e3e3; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .mail .subj { font-size: 19px; margin-bottom: 8px; }
+    .mail .from { font-weight: 700; margin-bottom: 10px; } .mail .from span { color: #8d9196; font-weight: 400; }
+    .mail p { margin: 0 0 9px; }
+    .mail a { color: #8ab4f8; }
+    .ucard { width: 380px; background: var(--bg); border: 2px solid var(--edge); border-radius: 12px; overflow: hidden;
+      font: 13px/1.45 system-ui, "Segoe UI", sans-serif; color: var(--fg); box-shadow: 4px 4px 0 var(--vc, var(--edge)), 0 10px 28px rgba(0,0,0,.4); }
+    .ucard .ot-logo { width: 24px; height: 24px; } .ucard .ot-wordmark { height: 24px; }
+    .ucard .body { padding: 12px; }
+    .ucard .verdict .vicon { width: 34px; height: 34px; font-size: 18px; }
+    .ucard .v-suspicious .vicon { padding-top: 9px; font-size: 14px; }
+    .ucard .vlabel { font-size: 18px; }
+    .ucard .note { margin: 10px 0 0; }
+    .ucard .k { margin-top: 10px; }
+    .ucard .dest { font-size: 16px; font-weight: 800; }
+    .ucard .code.url { display: block; margin-top: 3px; color: var(--muted); }
+    .ucard .disclaimer { margin-top: 8px; padding-top: 6px; font-size: 11px; }
+    .ucard .masked { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); margin-left: 4px; }
+
+    .badgemock { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 7px; border-radius: 999px;
+      border: 2px solid var(--vc); background: var(--ink); color: var(--on-ink); font: 700 14px/1.45 system-ui, "Segoe UI", sans-serif;
+      box-shadow: 3px 3px 0 var(--vc), 0 6px 16px rgba(0,0,0,.3); }
+    .badgemock .vicon { width: 24px; height: 24px; font-size: 14px; }
+    .badgemock.v-suspicious .vicon { padding-top: 6px; font-size: 12px; }
+    .badgemock .score { color: #c9cdd1; font-weight: 600; }
+
+    .sticker { background: var(--card); border: 3px solid #000; border-radius: 20px; box-shadow: 7px 7px 0 var(--sc, var(--pink)); padding: 26px 30px; }
+
+    /* ---- cover ---- */
+    .cover .content { top: 120px; align-items: flex-start; }
+    .cover .hero { display: flex; align-items: center; gap: 30px; margin-top: 30px; }
+    .cover .logo { width: 250px; height: 250px; filter: drop-shadow(6px 6px 0 #000); }
+    .cover .word { width: 700px; display: block; }
+    .cover .tag { font: italic 900 70px/1.02 Impact, "Arial Black", sans-serif; text-transform: uppercase; text-shadow: 4px 4px 0 #000; margin: 26px 0 0; }
+    .cover .tag .lime { color: var(--lime); } .cover .tag .pink { color: var(--pink); }
+    .chips { display: flex; flex-wrap: wrap; gap: 14px; }
+    .bigchip { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; padding: 7px 20px; border-radius: 999px;
+      border: 2.5px solid var(--lime); color: var(--lime); background: #111; }
+    .bigchip.pink { border-color: var(--pink); color: #ff7bb3; }
+    .byline { font-size: 28px; color: var(--muted); } .byline b { color: var(--fg); }
+    .feats { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 10px; }
+    .feat { display: inline-block; font: italic 900 29px/1 Impact, "Arial Black", sans-serif; text-transform: uppercase; letter-spacing: .03em;
+      color: #111; background: var(--sc); border: 3px solid #000; border-radius: 12px; padding: 12px 18px 10px; box-shadow: 5px 5px 0 #000; }
+
+    /* ---- problem slide ---- */
+    .scam { display: flex; gap: 24px; align-items: center; }
+    .scam .vicon { width: 64px; height: 64px; font-size: 32px; }
+    .scam p { margin: 0; font-size: 34px; line-height: 1.3; font-weight: 700; }
+    .scam p span { display: block; font-size: 25px; color: var(--muted); font-weight: 500; margin-top: 4px; }
+
+    /* ---- inbox list ---- */
+    .inbox { width: 540px; background: #222326; border: 1px solid #34363b; border-radius: 12px; overflow: hidden; font: 14px/1.4 "Segoe UI", sans-serif; color: #e6e6e6;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .inbox .row { padding: 9px 14px; border-bottom: 1px solid #333; }
+    .inbox .row:last-child { border-bottom: 0; }
+    .inbox .who { font-weight: 700; display: flex; justify-content: space-between; } .inbox .who i { font-style: normal; color: #9aa0a6; font-weight: 400; font-size: 12px; }
+    .inbox .sub { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inbox .pre { color: #9aa0a6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ---- file results (file checker page) ---- */
+    .fres { width: 560px; background: var(--card); border: 2px solid var(--line); border-left: 6px solid var(--vc); border-radius: 14px; padding: 14px 18px;
+      box-shadow: 4px 4px 0 var(--edge); font: 14px/1.45 system-ui, "Segoe UI", sans-serif; color: var(--fg); }
+    .fres .vlabel { font-size: 22px; }
+    .fres .fname { font-weight: 800; }
+    .fres .checks .detail { display: block; color: var(--muted); font-weight: 400; }
+    .fres .note { margin: 10px 0 0; }
+
+    /* ---- compose ---- */
+    .compose { width: 470px; background: #26272b; border: 1px solid #44464c; border-radius: 12px; padding: 12px 14px; font: 14px/1.5 Arial, sans-serif; color: #e3e3e3; }
+    .compose .to { color: #9aa0a6; margin-bottom: 8px; } .compose .to b { color: #e3e3e3; font-weight: 600; }
+    .compose .ed { border: 1px solid #55585e; border-radius: 6px; padding: 8px 10px; min-height: 92px; background: #1f2023; }
+    .compose .sig { color: #8d9196; } .compose .quote { color: #8d9196; border-left: 2px solid #55585e; padding-left: 8px; margin-top: 6px; }
+    .compose .send { display: inline-block; margin-top: 10px; background: #0b57d0; color: #fff; padding: 6px 18px; border-radius: 16px; font-weight: 700; }
+
+    .ucard .checks .detail { display: block; color: var(--muted); font-weight: 400; }
+    .numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .num { background: var(--card); border: 3px solid #000; border-radius: 16px; box-shadow: 5px 5px 0 var(--sc, var(--lime)); padding: 16px 20px; }
+    .num b { display: block; font: italic 900 50px/1 Impact, "Arial Black", sans-serif; color: var(--sc, var(--lime)); text-shadow: 2px 2px 0 #000; }
+    .num span { display: block; margin-top: 6px; font-size: 23px; font-weight: 700; color: #c9ccc6; }
+
+    /* ---- scoreboard (score/score.css, slide-sized) ---- */
+    .board { width: 560px; background: var(--bg); border: 2px solid var(--edge); border-radius: 12px; overflow: hidden;
+      font: 13px/1.45 system-ui, "Segoe UI", sans-serif; color: var(--fg); box-shadow: 4px 4px 0 var(--pink), 0 10px 28px rgba(0,0,0,.4); }
+    .board .ot-logo { width: 24px; height: 24px; } .board .ot-wordmark { height: 24px; }
+    .board .body { padding: 14px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat { background: var(--card); border: 2px solid var(--line); border-left: 6px solid var(--vc); border-radius: 12px; padding: 10px 12px; box-shadow: 3px 3px 0 var(--edge); }
+    .stat .big { font: italic 900 38px/1 Impact, "Arial Black", sans-serif; color: var(--vtext, var(--fg)); }
+    .stat .what { font-weight: 800; margin-top: 4px; }
+    .stat .more { color: var(--muted); font-size: 11px; }
+    .board table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+    .board th { text-align: left; color: var(--muted); font-weight: 700; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+    .board td { padding: 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .board tr:last-child td { border-bottom: 0; }
+    .outcome { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 10px; font-weight: 900; text-transform: uppercase; border: 1.5px solid #000; white-space: nowrap; }
+    .outcome.bad { background: #e00000; color: #fff; } .outcome.good { background: var(--lime); color: #111; }
+    .board td.vc { white-space: nowrap; font-weight: 800; }
+    .board td.vc.phishing { color: var(--phishing-text); } .board td.vc.suspicious { color: var(--suspicious-text); } .board td.vc.safe { color: var(--safe-text); }
+    .board .why { color: var(--muted); font-size: 11px; }
+
+    /* ---- learn (learn/learn.css, slide-sized) ---- */
+    .lesson { width: 560px; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 14px 16px; box-shadow: 4px 4px 0 var(--edge);
+      font: 13px/1.5 system-ui, "Segoe UI", sans-serif; color: var(--fg); }
+    .lesson .lmeta { color: var(--muted); font-size: 11px; font-weight: 700; display: flex; gap: 6px; align-items: center; }
+    .lesson .new { font-size: 9px; font-weight: 900; text-transform: uppercase; padding: 0 7px; border-radius: 999px; border: 1.5px solid #000; background: var(--pink); color: #fff; }
+    .lesson .ltitle { margin: 4px 0 8px; font: italic 900 25px/1 Impact, "Arial Black", sans-serif; text-transform: uppercase; text-shadow: 2px 2px 0 #000; }
+    .lesson .pmail { background: var(--bg); border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; font: 13px/1.5 Arial, sans-serif; }
+    .lesson .pmail .s { font-size: 15px; font-weight: 700; }
+    .lesson .pmail .hd { font-size: 11px; color: var(--muted); } .lesson .pmail .hd b { color: var(--fg); }
+    .lesson .pmail p { margin: 6px 0 0; }
+    .lesson mark { background: color-mix(in srgb, var(--phishing) 22%, transparent); box-shadow: inset 0 -2px 0 var(--phishing); color: inherit; border-radius: 3px; padding: 0 2px; }
+    .lesson mark::after { content: attr(data-n); display: inline-grid; place-items: center; width: 15px; height: 15px; margin-left: 3px; border-radius: 50%;
+      background: var(--phishing); color: #fff; font: 900 9px/1 system-ui, sans-serif; vertical-align: 1px; }
+    .lesson .flags { margin: 8px 0 0; padding-left: 20px; font-size: 12px; } .lesson .flags li::marker { color: var(--phishing-text); font-weight: 800; }
+    .qcard { width: 330px; background: var(--soft); border: 3px solid #000; border-radius: 12px; box-shadow: 4px 4px 0 var(--lime); padding: 10px 12px;
+      font: 12px/1.45 system-ui, "Segoe UI", sans-serif; color: var(--fg); }
+    .qcard .qh { font: italic 900 13px/1 Impact, "Arial Black", sans-serif; text-transform: uppercase; color: var(--pink-text); letter-spacing: .05em; }
+    .qcard .qq { font-weight: 700; margin: 6px 0; }
+    .qcard .o { border: 2px solid var(--btn-border); border-radius: 7px; padding: 5px 9px; margin-top: 5px; background: var(--soft); font-weight: 600; box-shadow: 2px 2px 0 var(--edge); }
+    .qcard .o.right { background: var(--lime); color: #111; border-color: #000; }
+    .qcard .ok { margin: 7px 0 0; font-weight: 900; color: var(--safe-text); }
+
+    /* ---- closing ---- */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .fact { background: var(--card); border: 3px solid #000; border-radius: 18px; box-shadow: 6px 6px 0 var(--sc, var(--lime)); padding: 28px 26px; }
+    .fact h3 { margin: 0 0 8px; font: italic 900 36px/1.05 Impact, "Arial Black", sans-serif; text-transform: uppercase; letter-spacing: .02em; color: var(--fg); }
+    .fact p { margin: 0; font-size: 25px; line-height: 1.35; color: #c9ccc6; }
+    .cta { background: var(--lime); color: #111; border: 3px solid #000; border-radius: 20px; box-shadow: 8px 8px 0 var(--pink); padding: 24px 30px; }
+    .cta h3 { margin: 0; font: italic 900 46px/1 Impact, "Arial Black", sans-serif; text-transform: uppercase; }
+    .cta p { margin: 8px 0 0; font-size: 26px; font-weight: 600; }
+    .fine { font-size: 19px; color: var(--muted); margin: 0; }
+  </style>
+</head>
+<body>
+
+<!-- Cover -->
+<section class="slide cover">
+  <div class="content">
+    <div class="chips"><span class="bigchip">Gmail</span><span class="bigchip">Outlook</span><span class="bigchip">Chrome &amp; Edge</span><span class="bigchip pink">Browser extension</span></div>
+    <div class="hero">
+      <img class="logo" src="../icons/logo512.png" alt="">
+      <img class="word" src="../icons/wordmark.png" alt="Off the Hook">
+    </div>
+    <p class="tag">The phishing detector<br>that reads <span class="lime">every email</span><br>right <span class="pink">alongside you</span>.</p>
+    <p class="lead" style="max-width:900px">It explains what's wrong in plain English, checks links, QR codes and attachments, and works <b>entirely on your own computer</b>.</p>
+    <div class="feats">
+      <span class="feat" style="--sc: var(--lime); transform: rotate(-2deg)">Link checks</span>
+      <span class="feat" style="--sc: var(--pink); transform: rotate(1.5deg)">QR codes</span>
+      <span class="feat" style="--sc: var(--lime); transform: rotate(-1deg)">File checker</span>
+      <span class="feat" style="--sc: var(--pink); transform: rotate(2deg)">Reply guard</span>
+      <span class="feat" style="--sc: var(--lime); transform: rotate(1deg)">Scam-site lists</span>
+      <span class="feat" style="--sc: var(--pink); transform: rotate(-1.5deg)">Contact memory</span>
+      <span class="feat" style="--sc: var(--lime); transform: rotate(1.5deg)">Scoreboard</span>
+      <span class="feat" style="--sc: var(--pink); transform: rotate(-1deg)">Lessons</span>
+    </div>
+    <p class="byline" style="margin-top:auto">Built by <b>Aaron Zajicek</b></p>
+  </div>
+  <div class="foot"><span>01 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- The problem -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">The problem</span></header>
+  <div class="content">
+    <div class="title">Phishing doesn't <span class="pink">look like</span> phishing anymore</div>
+    <div class="rule"></div>
+    <div class="sticker v-phishing" style="--sc: var(--phishing)"><div class="scam"><span class="vicon">✕</span><p>A “coworker” asks for your cell number<span>Sent from inside your company: their account was hacked.</span></p></div></div>
+    <div class="sticker v-suspicious" style="--sc: var(--suspicious)"><div class="scam"><span class="vicon">!</span><p>A QR code to a “Microsoft” sign-in page<span>Your phone scans it, and skips every protection on your work computer.</span></p></div></div>
+    <div class="sticker v-phishing" style="--sc: var(--phishing)"><div class="scam"><span class="vicon">✕</span><p>An invoice.pdf that's really a program<span>One double-click and it runs.</span></p></div></div>
+    <p class="lead" style="margin-top:6px">So I built <b>Off the Hook</b>: a browser extension that reads each email with you and says, <span class="hl">in plain English</span>, when something's off.</p>
+  </div>
+  <div class="foot"><span>02 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- What it is -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">How it works</span></header>
+  <div class="content">
+    <div class="kicker">Open an email. Get a verdict.</div>
+    <div class="title">A second opinion on <span class="lime">every email</span></div>
+    <div class="rule"></div>
+    <p class="lead">Off the Hook runs <b>55+ checks</b> on the sender, links, wording and attachments in milliseconds, then shows one clear verdict:</p>
+    <div style="display:flex; gap:22px; flex-wrap:wrap; zoom:1.75">
+      <span class="badgemock v-safe"><span class="vicon">✓</span>Likely Safe <span class="score">4</span></span>
+      <span class="badgemock v-suspicious"><span class="vicon">!</span>Suspicious <span class="score">45</span></span>
+      <span class="badgemock v-phishing"><span class="vicon">✕</span>Likely Phishing <span class="score">100</span></span>
+    </div>
+    <div class="stage">
+      <div class="ucard v-phishing" style="zoom:1.85; position:absolute; left:0; top:0; width:500px">
+        <header class="ot-bar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt=""></div><span class="mode">Rule-based</span></header>
+        <div class="body">
+          <div class="verdict v-phishing"><span class="vicon">✕</span><div><div class="vlabel" style="font-size:22px">Likely Phishing</div><div class="vscore">Risk score 100 / 100</div><div class="meter"><span style="width:100%"></span></div></div></div>
+          <p style="margin:10px 0 0">This email shows strong signs of phishing. Main concerns: sender domain imitates PayPal; link goes to a site imitating PayPal.</p>
+          <ul class="checks">
+            <li class="fail"><span class="m">✗</span><span>Sender domain imitates PayPal</span></li>
+            <li class="fail"><span class="m">✗</span><span>Link goes to a site imitating PayPal</span></li>
+            <li class="fail medium"><span class="m">✗</span><span>Threatens to suspend your account</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>03 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Shows its work -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Shows its work</span></header>
+  <div class="content">
+    <div class="title">Highlights the tricks, <span class="lime">checks every link</span></div>
+    <div class="rule"></div>
+    <p class="lead">Pressure tactics are highlighted right in the email. Hover any link to see <b>where it really goes</b>. The link is never opened.</p>
+    <div class="stage">
+      <div class="mail" style="zoom:1.45; position:absolute; left:0; top:0">
+        <div class="subj">Your account has been suspended</div>
+        <div class="from">PayPal Security <span>&lt;service@paypa1-security.com&gt;</span></div>
+        <p><mark class="phishguard-mark phishguard-low">Dear customer</mark>,</p>
+        <p>We noticed <mark class="phishguard-mark phishguard-medium">unusual activity</mark> on your account. To <mark class="phishguard-mark phishguard-high">restore access</mark>, <mark class="phishguard-mark phishguard-high">verify your account</mark> <mark class="phishguard-mark phishguard-medium">within 24 hours</mark>.</p>
+        <p><a class="phishguard-link-flag phishguard-high">https://www.paypal.com/signin</a></p>
+      </div>
+      <div class="ucard v-phishing" style="zoom:1.4; position:absolute; right:0; top:170px; width:390px">
+        <header class="ot-bar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt=""></div><span class="mode">Link check</span></header>
+        <div class="body">
+          <div class="verdict v-phishing"><span class="vicon">✕</span><div><div class="vlabel">Dangerous link</div><div class="vscore">Where this link really goes</div></div></div>
+          <div class="k">Really goes to</div>
+          <div class="dest">paypa1-security.com</div>
+          <span class="code url">http://paypa1-security.com/login.php?id=88231</span>
+          <ul class="checks">
+            <li class="fail"><span class="m">✗</span><span>Shows www.paypal.com but really goes to paypa1-security.com</span></li>
+            <li class="fail"><span class="m">✗</span><span>Imitates PayPal: swaps look-alike characters</span></li>
+                      </ul>
+          <p class="note verdict-color">Don't click. If you need this site, type its address yourself.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>04 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Known scam sites -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Known scam sites</span></header>
+  <div class="content">
+    <div class="title">Knows <span class="lime">500,000+</span> scam sites</div>
+    <div class="rule"></div>
+    <p class="lead">Links, QR codes and senders are checked against public lists of active phishing and malware sites, <b>right on your computer</b>.</p>
+    <div class="numbers">
+      <div class="num"><b>500,000+</b><span>known phishing sites</span></div>
+      <div class="num" style="--sc: var(--pink)"><b>Daily</b><span>fresh copy of the lists</span></div>
+      <div class="num"><b>1 µs</b><span>to check a link</span></div>
+    </div>
+    <div class="stage">
+      <div class="mail" style="zoom:1.45; position:absolute; left:0; top:0; width:340px">
+        <div class="subj">Document shared with you</div>
+        <div class="from">DocShare <span>&lt;notify@docshare-mail.com&gt;</span></div>
+        <p>A secure document is waiting for your signature.</p>
+        <p><a class="phishguard-link-flag phishguard-high">Review document</a></p>
+      </div>
+      <div class="ucard v-phishing" style="zoom:1.45; position:absolute; right:0; top:80px; width:360px">
+        <header class="ot-bar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt=""></div><span class="mode">Link check</span></header>
+        <div class="body">
+          <div class="verdict v-phishing"><span class="vicon">✕</span><div><div class="vlabel">Dangerous link</div><div class="vscore">Where this link really goes</div></div></div>
+          <div class="k">Really goes to</div>
+          <div class="dest">sign-docshare.click</div>
+          <ul class="checks">
+            <li class="fail"><span class="m">✗</span><span>Known scam site<span class="detail">Listed as an active phishing site (Phishing.Database)</span></span></li>
+          </ul>
+          <p class="note verdict-color">Don't click. If you need this site, type its address yourself.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>05 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Coworkers -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Knows your company</span></header>
+  <div class="content">
+    <div class="title">Catches <span class="pink">hacked</span> and <span class="lime">fake</span> coworkers</div>
+    <div class="rule"></div>
+    <p class="lead">When a coworker's email asks for your number, a password or gift cards, it tells you to <b>check with them in person</b>. Open Outlook's message details and it can tell a hacked account from a faked address.</p>
+    <div style="zoom:1.9; width:470px; display:flex; flex-direction:column; gap:12px; font: 13px/1.45 system-ui, 'Segoe UI', sans-serif">
+      <div class="alertbox">
+        <div class="alerttitle">⚠ Possibly compromised coworker account</div>
+        <p>This email comes from your own company's domain but asks for your phone number. Before you reply, ask Dana Lee in person, or call them on a number you already know. If they didn't send it, tell IT right away.</p>
+      </div>
+      <div class="alertbox">
+        <div class="alerttitle">⚠ Fake coworker address</div>
+        <p>It uses your company's address, but the message header shows it was sent from outside your company.</p>
+      </div>
+      <p style="margin:0; color:var(--muted); font-size:12px"><b style="color:var(--fg)">Sender read as:</b> Dana Lee &lt;dana.lee@yourcompany.com&gt;<span class="stag">header checked</span></p>
+    </div>
+  </div>
+  <div class="foot"><span>06 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Contact memory -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Contact memory</span></header>
+  <div class="content">
+    <div class="title">Spots a <span class="pink">familiar name</span> on a new address</div>
+    <div class="rule"></div>
+    <p class="lead">It remembers who normally emails you, as <b>scrambled fingerprints</b> on your computer. When “Kevin Smith” suddenly writes from a Gmail account, it notices.</p>
+    <div class="stage">
+      <div class="mail" style="zoom:1.45; position:absolute; left:0; top:0; width:340px">
+        <div class="subj">Quick favor</div>
+        <div class="from">Kevin Smith <span>&lt;kevin.smith.office@gmail.com&gt;</span></div>
+        <p>Are you free? I need you to pick up some gift cards for a client today. I'll pay you back.</p>
+      </div>
+      <div class="ucard v-phishing" style="zoom:1.35; position:absolute; right:0; top:185px; width:400px">
+        <header class="ot-bar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt=""></div><span class="mode">Rule-based</span></header>
+        <div class="body">
+          <div class="verdict v-phishing"><span class="vicon">✕</span><div><div class="vlabel">Likely Phishing</div><div class="vscore">Risk score 90 / 100</div><div class="meter"><span style="width:90%"></span></div></div></div>
+          <ul class="checks">
+            <li class="fail"><span class="m">✗</span><span>Kevin Smith usually emails you from a different address<span class="detail">12 normal emails from him at supplyco.com, never from this Gmail account.</span></span></li>
+            <li class="fail"><span class="m">✗</span><span>Personal gmail.com account asking for money or payment changes</span></li>
+            <li class="fail medium"><span class="m">✗</span><span>Requests money, gift cards, or payment changes</span></li>
+          </ul>
+          <p class="note verdict-color">Check with Kevin using an address or phone number you already know.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>07 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Inbox tags -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Before you open</span></header>
+  <div class="content">
+    <div class="title">Warns you <span class="lime">before</span> you even open it</div>
+    <div class="rule"></div>
+    <p class="lead">Risky emails get a tag right in your inbox list, from the sender, subject and preview alone. Hover the tag to see why.</p>
+    <div class="inbox" style="zoom:1.7">
+      <div class="row"><div class="who">Michael Torres CEO <i>10:41 AM</i></div><div class="sub"><span class="phishguard-row-tag phishguard-row-phishing" data-pg-label="✕ Phishing"></span>Quick favor</div><div class="pre">Are you at your desk? I need you to purchase 5 gift cards for a client…</div></div>
+      <div class="row"><div class="who">Jane Doe <i>10:12 AM</i></div><div class="sub">Q3 shop drawings</div><div class="pre">Attached are the Q3 drawings and the updated schedule.</div></div>
+      <div class="row"><div class="who">IT Helpdesk <i>9:58 AM</i></div><div class="sub"><span class="phishguard-row-tag phishguard-row-suspicious" data-pg-label="⚠ Suspicious"></span>Password expires today</div><div class="pre">Your password will expire today. Keep your current password here…</div></div>
+      <div class="row"><div class="who">Amazon.com <i>Mon</i></div><div class="sub">Your order has shipped</div><div class="pre">Hello Alex, your package will arrive Thursday.</div></div>
+      <div class="row"><div class="who">Dana Lee <i>Mon</i></div><div class="sub"><span class="phishguard-row-tag phishguard-row-suspicious" data-pg-label="⚠ Suspicious"></span>(no subject)</div><div class="pre">Can you send me your cell number?</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>08 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- QR codes -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">QR codes</span></header>
+  <div class="content">
+    <div class="title">Reads the <span class="pink">QR code</span> so you don't have to</div>
+    <div class="rule"></div>
+    <p class="lead">Scammers hide links in QR codes because filters can't read them. Off the Hook decodes them <b>on your computer</b> and checks where they really go.</p>
+    <div class="stage">
+      <div class="mail" style="zoom:1.5; position:absolute; left:0; top:0; width:330px">
+        <div class="subj">Benefits enrollment</div>
+        <div class="from">HR Department</div>
+        <p>Scan the QR code to update your benefits.</p>
+        <img class="phishguard-link-flag phishguard-high" src="qr-linkedin.png" width="150" height="150" alt="QR code" style="display:block; margin:6px 0 8px">
+        <span class="phishguard-link-badge phishguard-high" data-pg-label="⚠ QR code goes to: micros0ft-login.top" style="margin:0 !important"></span>
+      </div>
+      <div class="ucard v-phishing" style="zoom:1.45; position:absolute; right:0; top:60px; width:340px">
+        <header class="ot-bar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt=""></div><span class="mode">QR check</span></header>
+        <div class="body">
+          <div class="verdict v-phishing"><span class="vicon">✕</span><div><div class="vlabel">Dangerous link</div><div class="vscore">Where this QR code goes</div></div></div>
+          <div class="k">The QR code opens</div>
+          <div class="dest">micros0ft-login.top</div>
+          <ul class="checks">
+            <li class="fail"><span class="m">✗</span><span>Imitates Microsoft</span></li>
+            <li class="fail medium"><span class="m">✗</span><span>High-risk domain ending (.top)</span></li>
+            <li class="fail medium"><span class="m">✗</span><span>Hidden in a QR code: your phone skips your computer's protections</span></li>
+          </ul>
+          <p class="note verdict-color">Don't scan it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>09 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- File checker -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">File check</span></header>
+  <div class="content">
+    <div class="title">Checks the <span class="lime">attachment</span> before you open it</div>
+    <div class="rule"></div>
+    <p class="lead">Drop in a download and it looks inside: PDFs that run code or exist only to send you to a fake site, Office macros, programs in disguise, locked archives. <b>The file never leaves your computer.</b></p>
+    <div style="zoom:1.6; display:flex; flex-direction:column; gap:12px">
+      <div class="fres v-phishing">
+        <div class="verdict v-phishing"><span class="vicon">✕</span><div><div class="vlabel">Dangerous file</div><div class="vscore"><span class="fname">Invoice_2026.pdf</span> · Windows program</div></div></div>
+        <ul class="checks"><li class="fail high"><span class="m">✗</span><span>This "PDF" is really a Windows program<span class="detail">Opening it could run code. Delete it.</span></span></li></ul>
+      </div>
+      <div class="fres v-phishing">
+        <div class="verdict v-phishing"><span class="vicon">✕</span><div><div class="vlabel">Dangerous file</div><div class="vscore"><span class="fname">Invoice_8812.docx</span> · Word document</div></div></div>
+        <ul class="checks"><li class="fail high"><span class="m">✗</span><span>Contains macros, disguised as a .docx</span></li><li class="fail high"><span class="m">✗</span><span>Tells you to click "Enable content"</span></li></ul>
+      </div>
+      <div class="fres v-safe">
+        <div class="verdict v-safe"><span class="vicon">✓</span><div><div class="vlabel">No warning signs found</div><div class="vscore"><span class="fname">Shop_schedule.pdf</span> · PDF document</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>10 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Reply Guard -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Reply guard</span></header>
+  <div class="content">
+    <div class="title">Stops you <span class="pink">before</span> you hand it over</div>
+    <div class="rule"></div>
+    <p class="lead">Start replying to a suspicious email with your phone number, a password, card or bank details, and it <b>warns you and pauses Send</b> so you can double-check.</p>
+    <div class="stage">
+      <div class="compose" style="zoom:1.5; position:absolute; left:0; top:0">
+        <div class="to">To: <b>Dana Lee</b></div>
+        <div class="ed">Sure, my cell is 555-010-0147. Call me.<div class="sig">-- Alex</div><div class="quote">On Mon, Dana Lee wrote: Can you send me your cell number?</div></div>
+        <span class="send">Send</span>
+      </div>
+      <div class="ucard v-suspicious" style="zoom:1.45; position:absolute; right:0; top:150px; width:370px">
+        <header class="ot-bar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt=""></div><span class="mode">Reply guard</span></header>
+        <div class="body">
+          <div class="verdict v-suspicious"><span class="vicon">!</span><div><div class="vlabel">Send paused</div><div class="vscore">Replying to an email rated Suspicious</div></div></div>
+          <div class="k">Your reply includes:</div>
+          <ul class="checks"><li class="fail high"><span class="m">✗</span><span>A phone number<span class="masked">•••-•••-0147</span></span></li></ul>
+          <p class="note verdict-color">If Dana Lee really needs this, ask them in person first. Their account may be hacked.</p>
+          <div class="actions" style="margin-top:10px"><button class="primary">Keep editing</button><button>Send anyway</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>11 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Learn -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Learn</span></header>
+  <div class="content">
+    <div class="title">Teaches you to <span class="lime">spot it</span> yourself</div>
+    <div class="rule"></div>
+    <p class="lead">Short lessons on phishing in the <b>AI era</b>, built right in: practice emails with hidden red flags to find, and a quick quiz to finish.</p>
+    <div class="stage">
+      <div class="lesson" style="zoom:1.5; position:absolute; left:0; top:0">
+        <div class="lmeta"><span class="new">New</span>2 min read</div>
+        <div class="ltitle">Spelling mistakes won't save you anymore</div>
+        <div class="pmail">
+          <div class="s">Action required: storage limit reached</div>
+          <div class="hd"><b>From</b> Microsoft 365 Admin &lt;admin@m365-mailcenter.com&gt;</div>
+          <p>Your mailbox has reached <mark data-n="1">98% of its storage limit</mark>. To avoid interruption, please <mark data-n="2">verify your account within 24 hours</mark>.</p>
+          <p><mark data-n="3">Review storage settings</mark></p>
+        </div>
+        <ol class="flags">
+          <li>A classic reason to make you sign in</li>
+          <li>Deadlines are there to stop you from thinking</li>
+          <li>The button goes to m365-mailcenter.com, not microsoft.com</li>
+        </ol>
+      </div>
+      <div class="qcard" style="zoom:1.5; position:absolute; right:0; top:290px">
+        <div class="qh">Quick check</div>
+        <div class="qq">A polished email from "Payroll" asks you to confirm your bank details through a link. What do you do?</div>
+        <div class="o">It's well written, so it's fine</div>
+        <div class="o right">Go to the payroll site yourself, or call HR</div>
+        <p class="ok">✓ Right!</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>12 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Scoreboard -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Scoreboard</span></header>
+  <div class="content">
+    <div class="title">Keeps <span class="lime">score</span> on itself</div>
+    <div class="rule"></div>
+    <p class="lead">Drop in saved phishing and normal emails. The Scoreboard shows what it catches, what it gets wrong, and <b>why</b>, so every improvement is measured instead of guessed.</p>
+    <div class="board" style="zoom:1.62">
+      <header class="ot-bar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt=""></div><span class="mode">Scoreboard</span></header>
+      <div class="body">
+        <div class="stats-grid">
+          <div class="stat v-suspicious"><div class="big">87.5%</div><div class="what">Phishing caught: 7 of 8</div><div class="more">7 rated Likely Phishing, 0 Suspicious</div></div>
+          <div class="stat v-safe"><div class="big">0%</div><div class="what">False alarms: 0 of 4</div><div class="more">0 wrongly rated Likely Phishing</div></div>
+        </div>
+        <table>
+          <tr><th>Result</th><th>Email</th><th>Verdict</th></tr>
+          <tr><td><span class="outcome bad">Missed</span></td><td>Benefits enrollment<div class="why">Email relies on a QR code or image</div></td><td class="vc safe">Likely Safe 16</td></tr>
+          <tr><td><span class="outcome good">Caught</span></td><td>Your account has been suspended<div class="why">Sender domain imitates PayPal</div></td><td class="vc phishing">Likely Phishing 100</td></tr>
+          <tr><td><span class="outcome good">Caught</span></td><td>Quick favor<div class="why">Free email account posing as a company or executive</div></td><td class="vc phishing">Likely Phishing 85</td></tr>
+          <tr><td><span class="outcome good">OK</span></td><td>Your Amazon.com order has shipped</td><td class="vc safe">Likely Safe 0</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="fine">Shown: a run on the extension's built-in sample emails. Run it on your own email to get your numbers.</p>
+  </div>
+  <div class="foot"><span>13 / 14</span><span class="swipe">Swipe →</span></div>
+</section>
+
+<!-- Private by design + CTA -->
+<section class="slide">
+  <header class="ot-bar sbar"><img class="ot-logo" src="../icons/icon48.png" alt=""><div class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook"></div><span class="mode">Private by design</span></header>
+  <div class="content">
+    <div class="title">Your email <span class="lime">stays yours</span></div>
+    <div class="rule"></div>
+    <div class="grid">
+      <div class="fact"><h3>Nothing uploaded</h3><p>Every check runs on your computer. The only download is the daily scam-site list.</p></div>
+      <div class="fact" style="--sc: var(--pink)"><h3>Read-only</h3><p>Never sends, deletes, moves or edits your email.</p></div>
+      <div class="fact" style="--sc: var(--pink)"><h3>Learns from you</h3><p>"It's phishing" and "It's safe" buttons teach it, stored on your computer.</p></div>
+      <div class="fact"><h3>No outside code</h3><p>Even the QR reader and file checker are built in.</p></div>
+      <div class="fact"><h3>Optional AI</h3><p>A second opinion from a local model, only if you turn it on.</p></div>
+      <div class="fact" style="--sc: var(--pink)"><h3>125 tests</h3><p>Automated tests against sample scams, booby-trapped files and real QR codes.</p></div>
+    </div>
+    <div class="cta" style="margin-top:auto">
+      <h3>Want to try it?</h3>
+      <p>Message me. I'd also love to see any phish it misses.</p>
+    </div>
+    <p class="fine">Off the Hook gives advice, not guarantees: always confirm unusual requests through a channel you already trust.</p>
+  </div>
+  <div class="foot"><span>14 / 14</span><span style="display:flex; align-items:center; gap:12px"><img src="../icons/icon48.png" width="34" height="34" alt="">Off the Hook</span></div>
+</section>
+
+<script>
+  // linkedin.html?slide=3 shows one slide (for screenshots / review).
+  const one = new URLSearchParams(location.search).get('slide');
+  if (one) document.querySelectorAll('.slide').forEach((s, i) => { if (i + 1 !== Number(one)) s.remove(); });
+</script>
+
+</body>
+</html>

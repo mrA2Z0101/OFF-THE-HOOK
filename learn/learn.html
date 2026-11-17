@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Off the Hook Learn</title>
+  <script src="../shared/brand.js" data-adopt></script>
+  <link rel="stylesheet" href="../options/options.css">
+  <link rel="stylesheet" href="learn.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to posts</a>
+  <header class="ot-bar ot-bar-lg">
+    <img class="ot-logo" src="../icons/logo512.png" alt="" width="72" height="72">
+    <div class="hero-text">
+      <h1 class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook" width="300" height="64"><span class="ot-title-text" aria-hidden="true">Off the Hook</span></h1>
+      <p class="sub">Short lessons on spotting phishing in the AI era, with practice emails and quick quizzes.</p>
+    </div>
+    <span class="mode">Learn</span>
+  </header>
+
+  <main id="main" class="learn">
+    <!-- List of posts -->
+    <div id="listView">
+      <div class="toolbar">
+        <label class="sr-only" for="search">Search posts</label>
+        <input type="search" id="search" placeholder="Search posts…" autocomplete="off">
+        <div id="tags" class="tagbar" role="group" aria-label="Filter by topic"></div>
+      </div>
+      <p id="listStatus" class="help" role="status" aria-live="polite"></p>
+      <div id="posts" class="posts"></div>
+    </div>
+
+    <!-- One post -->
+    <div id="postView" hidden>
+      <div class="row-actions"><a class="ot-btn back" href="#/">← All posts</a></div>
+      <article id="article" class="article"></article>
+      <nav id="pager" class="pager" aria-label="More posts"></nav>
+    </div>
+  </main>
+
+  <script src="../shared/learnmd.js"></script>
+  <script src="learn.js"></script>
+</body>
+</html>

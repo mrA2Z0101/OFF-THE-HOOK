@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Off the Hook Settings</title>
+  <script src="../shared/brand.js" data-adopt></script>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to settings</a>
+  <!-- Shared Off the Hook header (same component as the panel, popup and link card, large size) -->
+  <header class="ot-bar ot-bar-lg">
+    <img class="ot-logo" src="../icons/logo512.png" alt="" width="72" height="72">
+    <div class="hero-text">
+      <h1 class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook" width="300" height="64"><span class="ot-title-text" aria-hidden="true">Off the Hook</span></h1>
+      <p class="sub">Results are advisory only. Off the Hook can miss phishing and can flag safe email; always verify independently.</p>
+    </div>
+    <span class="mode">Settings</span>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="Settings sections">
+      <a href="#mode">Detection mode</a>
+      <a href="#sensitivity">Sensitivity</a>
+      <a href="#company">Your company</a>
+      <a href="#trusted">Trusted senders</a>
+      <a href="#keywords">Custom keywords</a>
+      <a href="#reports">Your reports</a>
+      <a href="#blocklists">Known scam sites</a>
+      <a href="#contacts">Contact memory</a>
+      <a href="#highlights">Highlights</a>
+      <a href="#privacy">Privacy &amp; data</a>
+      <a href="../scan/scan.html" target="_blank" rel="noopener">File checker ↗</a>
+      <a href="../score/score.html" target="_blank" rel="noopener">Scoreboard ↗</a>
+      <a href="../learn/learn.html" target="_blank" rel="noopener">Learn ↗</a>
+    </nav>
+
+    <main id="main">
+      <!-- Detection mode -->
+      <section id="mode" aria-labelledby="mode-h">
+        <h2 id="mode-h">Detection mode</h2>
+        <p>Rule-based checks always run, entirely inside your browser, with no setup. AI analysis is optional and sends a copy of the open email to the provider you choose below.</p>
+
+        <div class="toggle-row">
+          <label class="switch">
+            <input type="checkbox" id="aiEnabled" aria-describedby="aiEnabled-help">
+            <span class="slider" aria-hidden="true"></span>
+            <span class="label">Enable AI analysis</span>
+          </label>
+          <span id="aiState" class="pill">Off · rule-based only</span>
+        </div>
+        <p id="aiEnabled-help" class="help">When on, every email you open is sent (after the privacy filtering below) to your AI provider. Off by default.</p>
+
+        <fieldset id="aiFields">
+          <legend>AI provider</legend>
+          <div class="radios" role="radiogroup" aria-label="AI provider">
+            <label><input type="radio" name="provider" value="ollama"> <strong>Ollama / local model</strong> <span class="rec">Recommended for privacy: the email never leaves your computer</span></label>
+            <label><input type="radio" name="provider" value="openai"> <strong>OpenAI-compatible endpoint</strong> <span class="rec">OpenAI, OpenRouter, LM Studio, Groq, vLLM and others</span></label>
+            <label><input type="radio" name="provider" value="anthropic"> <strong>Anthropic API</strong> <span class="rec">Claude models</span></label>
+          </div>
+
+          <div class="provider" data-provider="ollama">
+            <label for="ollamaUrl">Base URL</label>
+            <input id="ollamaUrl" type="url" placeholder="http://localhost:11434" spellcheck="false">
+            <label for="ollamaModel">Model name</label>
+            <input id="ollamaModel" type="text" placeholder="e.g. llama3.1, qwen2.5, gemma3" spellcheck="false">
+            <p class="help">Install Ollama, run <code>ollama pull llama3.1</code>, then enter the model name. If the test fails with HTTP 403, see the README section on <code>OLLAMA_ORIGINS</code>.</p>
+          </div>
+
+          <div class="provider" data-provider="openai">
+            <label for="openaiUrl">Base URL</label>
+            <input id="openaiUrl" type="url" placeholder="https://api.openai.com/v1" spellcheck="false">
+            <p class="help">Examples: <code>https://api.openai.com/v1</code>, <code>https://openrouter.ai/api/v1</code>, <code>http://localhost:1234/v1</code> (LM Studio).</p>
+            <label for="openaiModel">Model name</label>
+            <input id="openaiModel" type="text" placeholder="e.g. gpt-4o-mini" spellcheck="false">
+            <label for="openaiKey">API key <span class="opt">(optional for local servers)</span></label>
+            <div class="keyrow">
+              <input id="openaiKey" type="password" autocomplete="off" spellcheck="false">
+              <button type="button" class="ghost reveal" data-for="openaiKey" aria-pressed="false">Show</button>
+              <button type="button" class="ghost forget" data-key="openaiKey">Remove saved key</button>
+            </div>
+            <p class="help keyhelp" data-key="openaiKey"></p>
+          </div>
+
+          <div class="provider" data-provider="anthropic">
+            <label for="anthropicModel">Model name</label>
+            <input id="anthropicModel" type="text" placeholder="claude-sonnet-5-5" spellcheck="false">
+            <p class="help">For example <code>claude-sonnet-5-5</code>, or <code>claude-haiku-4-5</code> for lower cost.</p>
+            <label for="anthropicKey">API key</label>
+            <div class="keyrow">
+              <input id="anthropicKey" type="password" autocomplete="off" spellcheck="false">
+              <button type="button" class="ghost reveal" data-for="anthropicKey" aria-pressed="false">Show</button>
+              <button type="button" class="ghost forget" data-key="anthropicKey">Remove saved key</button>
+            </div>
+            <p class="help keyhelp" data-key="anthropicKey"></p>
+          </div>
+
+          <div class="testrow">
+            <button type="button" id="testBtn">Test connection</button>
+            <span id="testStatus" role="status" aria-live="polite"></span>
+          </div>
+
+          <h3>AI options</h3>
+          <label class="check"><input type="checkbox" id="redact"> Redact email addresses and long numbers before sending <span class="opt">(recommended)</span></label>
+          <label class="check"><input type="checkbox" id="fullBody"> Send the full email body <span class="opt">(otherwise only the first 3,000 characters)</span></label>
+          <div class="grid2">
+            <div>
+              <label for="maxTokens">Max response tokens</label>
+              <input id="maxTokens" type="number" min="64" max="8192" step="1">
+            </div>
+            <div>
+              <label for="timeoutSec">Timeout (seconds)</label>
+              <input id="timeoutSec" type="number" min="5" max="180" step="1">
+            </div>
+          </div>
+          <label for="blend">How much the AI counts in the final score: <output id="blendOut" for="blend">50%</output></label>
+          <input id="blend" type="range" min="0" max="100" step="5" aria-describedby="blend-help">
+          <p id="blend-help" class="help">Both scores are always shown. 0% = rules only, 100% = AI only.</p>
+        </fieldset>
+      </section>
+
+      <!-- Sensitivity -->
+      <section id="sensitivity" aria-labelledby="sens-h">
+        <h2 id="sens-h">Sensitivity</h2>
+        <div class="radios" role="radiogroup" aria-labelledby="sens-h">
+          <label><input type="radio" name="sensitivity" value="low"> <strong>Low</strong> <span class="rec">Fewer warnings. Suspicious at 40+, phishing at 70+.</span></label>
+          <label><input type="radio" name="sensitivity" value="medium"> <strong>Medium</strong> <span class="rec">Balanced (default). Suspicious at 25+, phishing at 55+.</span></label>
+          <label><input type="radio" name="sensitivity" value="high"> <strong>High</strong> <span class="rec">More warnings, more false alarms. Suspicious at 15+, phishing at 40+.</span></label>
+        </div>
+      </section>
+
+      <!-- Company -->
+      <section id="company" aria-labelledby="company-h">
+        <h2 id="company-h">Your company</h2>
+        <label for="companyDomains">Your company's email domain(s), one per line (for example <code>yourcompany.com</code>)</label>
+        <textarea id="companyDomains" rows="3" spellcheck="false" placeholder="yourcompany.com" aria-describedby="company-help"></textarea>
+        <div id="company-help">
+          <p class="help">With this set, Off the Hook will:</p>
+          <ul class="help">
+            <li><strong>Warn about possibly compromised coworker accounts.</strong> If an email from your own domain asks for your phone number, passwords or personal details, gift cards, money transfers or bank details, or a secret favor, or contains a deceptive link or dangerous attachment, you'll see a "Possibly compromised coworker account" warning telling you to check with the person in person before doing anything.</li>
+            <li><strong>Catch outsiders pretending to be your company</strong>, such as look-alike domains (<code>yourcompany-payroll.com</code>, <code>yourcornpany.com</code>) or your company's name in the sender name of an outside or Gmail address.</li>
+          </ul>
+          <p class="help">This does <em>not</em> make your company's email trusted. Everyday requests between coworkers ("text me when the truck arrives", "are you free at 2?") don't trigger the warning.</p>
+        </div>
+        <p id="companyStatus" class="help" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Trusted -->
+      <section id="trusted" aria-labelledby="trusted-h">
+        <h2 id="trusted-h">Trusted senders and domains</h2>
+        <label for="trustedList">One per line: a domain (<code>example.com</code>, covers its subdomains) or a full address (<code>person@example.com</code>).</label>
+        <textarea id="trustedList" rows="6" spellcheck="false"></textarea>
+        <p class="help">Mail from these senders gets a much lower score (unless sender authentication fails), and links to trusted domains skip look-alike checks. Attackers can fake a sender's name and address, so add only domains you are sure about.</p>
+      </section>
+
+      <!-- Keywords -->
+      <section id="keywords" aria-labelledby="kw-h">
+        <h2 id="kw-h">Custom keywords</h2>
+        <label for="customKeywords">Extra phrases to flag, one per line (not case-sensitive). Start a line with <code>re:</code> for a regular expression.</label>
+        <textarea id="customKeywords" rows="6" spellcheck="false" placeholder="e.g.&#10;change of remittance&#10;payroll update&#10;re:invoice\s*#?\d{6,}"></textarea>
+        <p class="help">The built-in phrase lists are in <code>data/keywords.json</code> inside the extension folder. Edit that file and reload the extension to change them (see README).</p>
+      </section>
+
+      <!-- Reports -->
+      <section id="reports" aria-labelledby="rep-h">
+        <h2 id="rep-h">Your reports</h2>
+        <p>When you click <strong>It's phishing</strong> or <strong>It's safe</strong> in the Off the Hook panel on an email, the report is saved here, on this computer only, and Off the Hook learns from it right away.</p>
+        <ul class="help">
+          <li><strong>It's phishing:</strong> future email from that sender, from that sender's domain (unless it's a shared one like gmail.com), or linking to the same sites gets flagged. Phrases you selected ("What gave it away?") are watched for.</li>
+          <li><strong>It's safe:</strong> the warnings that fired are quieted for that sender. Compromised-coworker, failed-authentication and other critical warnings always stay on.</li>
+          <li>A later report about the same sender replaces an earlier one. Delete a report to undo what was learned from it.</li>
+        </ul>
+        <p id="reportStats" class="stats"></p>
+        <div id="learned" class="learned"></div>
+        <div class="tablewrap">
+          <table id="reportTable" hidden>
+            <caption class="sr-only">Saved reports, newest first</caption>
+            <thead><tr><th scope="col">Date</th><th scope="col">Report</th><th scope="col">Sender</th><th scope="col">Subject and details</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <label class="check"><input type="checkbox" id="saveText"> Also save the email text with new reports <span class="opt">(off by default; lets a future version learn wording patterns. Saved with "Save settings".)</span></label>
+        <div class="row-actions">
+          <button type="button" id="exportReports">Export reports</button>
+          <button type="button" id="importReports">Import reports…</button>
+          <input type="file" id="importFile" accept=".json,application/json" hidden>
+          <button type="button" class="danger" id="deleteAllReports">Delete all reports</button>
+        </div>
+        <p class="help">Export creates a file you can keep as a backup or give to IT or a coworker; they can import it to learn from your reports. Reports include sender, subject, link sites and your notes (and the email text, if you turned that on).</p>
+        <p id="reportsStatus" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Known scam sites -->
+      <section id="blocklists" aria-labelledby="bl-h">
+        <h2 id="bl-h">Known scam sites</h2>
+        <p>Once a day, Off the Hook downloads free public lists of <strong>active phishing and malware sites</strong> and checks every link (and sender) against them on this computer. Only the lists are downloaded: nothing about your email is ever sent.</p>
+        <label class="check"><input type="checkbox" id="blEnabled"> Download the lists daily and flag links to known scam sites</label>
+        <p id="blStatus" class="stats" role="status" aria-live="polite"></p>
+        <ul id="blSources" class="bl-sources" aria-label="Lists to use"></ul>
+        <div class="row-actions"><button type="button" id="blUpdate">Update now</button></div>
+        <p class="help">Turning a list off takes effect after you save (the lists are rebuilt then). Official brand sites, your company, your trusted senders and big shared services (Google, Microsoft, Amazon, Dropbox, GitHub…) are never flagged just for being listed.</p>
+      </section>
+
+      <!-- Contact memory -->
+      <section id="contacts" aria-labelledby="ct-h">
+        <h2 id="ct-h">Contact memory</h2>
+        <p>Off the Hook remembers who you've had <strong>normal email</strong> from, so it can warn you when a familiar name writes from an address they've never used with you (a favourite trick in boss and coworker scams), or when someone you've never heard from asks for something.</p>
+        <ul class="help">
+          <li>Names and addresses are stored only as scrambled fingerprints on this computer. Only the usual <em>domain</em> for a name (like yourcompany.com) is kept readable, for the warning text.</li>
+          <li>An address counts as known after three normal emails on different days, or as soon as you click <strong>It's safe</strong>. Clicking <strong>It's phishing</strong> forgets the sender.</li>
+          <li>"First email from this sender" notes start once 40 normal emails have been learned.</li>
+        </ul>
+        <label class="check"><input type="checkbox" id="histEnabled"> Remember who I've had normal email from</label>
+        <p id="histStats" class="stats" role="status" aria-live="polite"></p>
+        <div class="row-actions"><button type="button" class="danger" id="histClear">Forget all contacts</button></div>
+      </section>
+
+      <!-- Highlights -->
+      <section id="highlights" aria-labelledby="hl-h">
+        <h2 id="hl-h">Highlight preferences</h2>
+        <label class="check"><input type="checkbox" id="hlEnabled"> Highlight suspicious words and links in the email</label>
+        <label class="check"><input type="checkbox" id="linkBadges"> Show a "real destination" badge next to risky links</label>
+        <label class="check"><input type="checkbox" id="linkHover"> Check links when I hover over them (shows where a link really goes and what Off the Hook checked; the link is never opened)</label>
+        <label class="check"><input type="checkbox" id="qrRead"> Read QR codes in email pictures and check where they go (read on your computer; the address is never opened)</label>
+        <label class="check"><input type="checkbox" id="replyGuard"> Reply guard: warn me if a reply to a suspicious email includes a phone number, password, card or bank details, a sign-in code or gift card codes</label>
+        <label class="check" style="padding-left:24px"><input type="checkbox" id="pauseSend"> …and pause Send once so I can double-check</label>
+        <label class="check"><input type="checkbox" id="inboxTags"> Flag risky emails in the inbox list before I open them (checks only the sender, subject and preview line)</label>
+        <label class="check"><input type="checkbox" id="showBadge"> Show the floating Off the Hook badge on webmail pages</label>
+        <div class="colors">
+          <label><input type="color" id="cHigh"> High risk</label>
+          <label><input type="color" id="cMedium"> Medium risk</label>
+          <label><input type="color" id="cLow"> Low risk</label>
+          <label><input type="color" id="cAi"> AI highlight</label>
+          <button type="button" class="ghost" id="resetColors">Reset colors</button>
+        </div>
+        <p class="help">Severity is also shown by underline style (solid, dashed, dotted), a ⚠ icon for high risk, and an "AI" tag for AI highlights, so colors are never the only signal.</p>
+      </section>
+
+      <!-- Privacy -->
+      <section id="privacy" aria-labelledby="priv-h">
+        <h2 id="priv-h">Privacy and data</h2>
+        <ul class="facts">
+          <li><strong>Rule-based mode:</strong> your email never leaves your browser. The only downloads are the public scam-site lists (once a day, if turned on); no email data is sent with them.</li>
+          <li><strong>AI mode:</strong> for each email you open, Off the Hook sends the sender name and address, reply-to, subject, body (first 3,000 characters unless "full body" is on), link text and addresses, attachment file names, and the rule findings to the provider you configured. With redaction on, email addresses keep only their domain (<code>[email]@example.com</code>), numbers of 6+ digits become <code>[number]</code>, and link query strings are removed.</li>
+          <li>Your API key is stored only on this computer (<code>chrome.storage.local</code>), never synced, never logged, and only sent to the provider in a request header.</li>
+          <li>Off the Hook only reads the email that is open. It never sends, deletes, moves, or edits email, and never clicks links.</li>
+          <li>The toolbar remembers only each tab's verdict and score (not email text) until the browser closes.</li>
+          <li><strong>Your reports</strong> (sender, subject, link sites, your phrases and notes, and the email text only if you turn that on) stay on this computer unless you export them.</li>
+        </ul>
+        <button type="button" class="danger" id="clearAll">Clear all Off the Hook data</button>
+        <p class="help">Removes all settings, API keys, your reports, granted AI site permissions, and cached verdicts.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="savebar">
+    <span id="saveStatus" role="status" aria-live="polite"></span>
+    <button type="button" id="saveBtn" class="primary">Save settings</button>
+  </div>
+
+  <dialog id="privacyDialog" aria-labelledby="pd-h" aria-describedby="pd-d">
+    <h2 id="pd-h">Turn on AI analysis?</h2>
+    <div id="pd-d">
+      <p>With AI analysis on, <strong>the content of every email you open</strong> (sender, subject, body, links, attachment names) is sent to the AI provider you configure, after the privacy filtering you choose.</p>
+      <p>That provider's privacy policy and data retention rules apply. For maximum privacy, use a local model with Ollama so nothing leaves your computer.</p>
+      <p>Do not enable this for mailboxes your organization prohibits sharing with outside services.</p>
+    </div>
+    <div class="dlg-actions">
+      <button type="button" id="pdCancel">Keep it off</button>
+      <button type="button" id="pdOk" class="primary">I understand, enable AI</button>
+    </div>
+  </dialog>
+
+  <dialog id="clearDialog" aria-labelledby="cd-h">
+    <h2 id="cd-h">Clear all Off the Hook data?</h2>
+    <p>This resets every setting, deletes saved API keys and all your reports, and revokes AI site permissions. It cannot be undone.</p>
+    <div class="dlg-actions">
+      <button type="button" id="cdCancel">Cancel</button>
+      <button type="button" id="cdOk" class="danger">Clear everything</button>
+    </div>
+  </dialog>
+
+  <script src="../shared/config.js"></script>
+  <script src="../shared/domain-utils.js"></script>
+  <script src="../shared/feedback.js"></script>
+  <script src="../background/providers.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

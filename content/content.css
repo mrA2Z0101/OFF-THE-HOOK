@@ -1,0 +1,107 @@
+/* Off the Hook styles injected into the webmail page. Everything is namespaced "phishguard-". */
+:root {
+  --phishguard-high: #e53935;
+  --phishguard-medium: #fb8c00;
+  --phishguard-low: #fdd835;
+  --phishguard-ai: #ff2e88; /* brand pink */
+}
+
+/* Severity is shown three ways: color, underline style, and (for high) an icon. */
+mark.phishguard-mark {
+  color: inherit !important;
+  padding: 0 1px !important;
+  border-radius: 2px !important;
+  cursor: help !important;
+  text-decoration: none !important;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+mark.phishguard-mark.phishguard-high {
+  background: color-mix(in srgb, var(--phishguard-high) 26%, transparent) !important;
+  border-bottom: 2px solid var(--phishguard-high) !important;
+}
+mark.phishguard-mark.phishguard-high::before {
+  content: "\26A0\FE0E";
+  font-size: 0.8em;
+  margin-right: 1px;
+  color: var(--phishguard-high);
+}
+mark.phishguard-mark.phishguard-medium {
+  background: color-mix(in srgb, var(--phishguard-medium) 24%, transparent) !important;
+  border-bottom: 2px dashed var(--phishguard-medium) !important;
+}
+mark.phishguard-mark.phishguard-low {
+  background: color-mix(in srgb, var(--phishguard-low) 35%, transparent) !important;
+  border-bottom: 2px dotted color-mix(in srgb, var(--phishguard-low) 70%, #000) !important;
+}
+/* AI highlights: wavy underline + "AI" tag. Combined with a rule severity when both flagged it. */
+mark.phishguard-mark.phishguard-ai {
+  text-decoration: underline wavy var(--phishguard-ai) !important;
+  text-decoration-thickness: 1.5px !important;
+  text-underline-offset: 3px !important;
+}
+mark.phishguard-mark.phishguard-ai:not(.phishguard-high):not(.phishguard-medium):not(.phishguard-low) {
+  background: color-mix(in srgb, var(--phishguard-ai) 18%, transparent) !important;
+}
+mark.phishguard-mark.phishguard-ai::after {
+  content: "AI";
+  display: inline-block;
+  margin-left: 2px;
+  padding: 0 3px;
+  font: 700 9px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  vertical-align: super;
+  color: #fff;
+  background: var(--phishguard-ai);
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+}
+
+.phishguard-link-flag {
+  outline: 2px solid var(--phishguard-high) !important;
+  outline-offset: 1px !important;
+  border-radius: 2px;
+}
+.phishguard-link-flag.phishguard-medium { outline-style: dashed !important; outline-color: var(--phishguard-medium) !important; }
+.phishguard-link-flag.phishguard-low { outline-style: dotted !important; outline-color: color-mix(in srgb, var(--phishguard-low) 70%, #000) !important; }
+img.phishguard-link-flag { outline-width: 3px !important; outline-offset: 3px !important; cursor: help !important; }
+
+span.phishguard-link-badge {
+  display: inline-block !important;
+  margin: 0 0 0 6px !important;
+  padding: 1px 7px !important;
+  font: 600 11px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  color: #fff !important;
+  background: #c40000 !important;
+  border: 1.5px solid #111 !important;
+  box-shadow: 2px 2px 0 #111 !important;
+  border-radius: 10px !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  cursor: help !important;
+  text-decoration: none !important;
+}
+span.phishguard-link-badge::before { content: attr(data-pg-label); }
+span.phishguard-link-badge.phishguard-medium { background: #ffb020 !important; color: #111 !important; }
+span.phishguard-link-badge.phishguard-low { background: #111 !important; color: #a6ff00 !important; } /* QR code with no warning signs */
+
+/* Inbox list tag on risky (unopened) rows. Text comes from CSS so it's never read back as row text. */
+span.phishguard-row-tag {
+  display: inline-block !important;
+  flex: none !important;
+  margin: 0 6px 0 0 !important;
+  padding: 0 6px !important;
+  font: 800 10px/15px system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase !important;
+  border: 1.5px solid #111 !important;
+  border-radius: 9px !important;
+  box-shadow: 1.5px 1.5px 0 #111 !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  cursor: help !important;
+}
+span.phishguard-row-tag::before { content: attr(data-pg-label); }
+span.phishguard-row-tag.phishguard-row-suspicious { background: #ffb020 !important; color: #111 !important; }
+span.phishguard-row-tag.phishguard-row-phishing { background: #c40000 !important; color: #fff !important; }
+
+/* Hover tips use the shared Off the Hook card (content/linkcard.js), not a page-level tooltip. */

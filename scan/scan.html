@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Off the Hook File Checker</title>
+  <script src="../shared/brand.js" data-adopt></script>
+  <link rel="stylesheet" href="../options/options.css">
+  <link rel="stylesheet" href="scan.css">
+</head>
+<body>
+  <!-- Shared Off the Hook header (large size, same as the settings page) -->
+  <header class="ot-bar ot-bar-lg">
+    <img class="ot-logo" src="../icons/logo512.png" alt="" width="72" height="72">
+    <div class="hero-text">
+      <h1 class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook" width="300" height="64"><span class="ot-title-text" aria-hidden="true">Off the Hook</span></h1>
+      <p class="sub">Check a file before you open it. Everything happens on this computer: the file is never uploaded, opened or run.</p>
+    </div>
+    <span class="mode">File check</span>
+  </header>
+
+  <main id="main" class="scan">
+    <section id="drop" class="dropzone" aria-labelledby="drop-h">
+      <div class="dz-art" aria-hidden="true">⬇</div>
+      <h2 id="drop-h">Drop files here</h2>
+      <p>PDFs, Word, Excel and PowerPoint files, ZIP archives, web pages, pictures with QR codes. Up to 100 MB each.</p>
+      <div class="row-actions">
+        <button id="pick" type="button" class="primary">Choose files</button>
+        <input id="file" type="file" multiple hidden>
+      </div>
+    </section>
+
+    <div id="results" aria-live="polite"></div>
+
+    <section aria-labelledby="how-h">
+      <h2 id="how-h">Checking an email attachment</h2>
+      <ol class="facts">
+        <li><strong>Download it, but don't open it.</strong> Downloading is safe; opening is when a bad file does damage.</li>
+        <li><strong>Drag it here</strong> from your Downloads folder (or the browser's download list), or click <em>Choose files</em>.</li>
+        <li><strong>Dangerous?</strong> Delete it, and report the email to IT. <strong>Be careful?</strong> Only open it if you expected it, and never click "Enable content".</li>
+      </ol>
+      <h3>What it looks for</h3>
+      <ul class="help">
+        <li>Files pretending to be something else: a "PDF" that is really a program, a web page or a shortcut</li>
+        <li>PDFs that run code, start programs, carry hidden files, or exist only to send you to a website (those links get the same checks as email links)</li>
+        <li>Office files with macros, "Enable content" tricks, DDE commands, or content pulled from the internet when opened</li>
+        <li>Password-protected or nested archives, and risky files inside archives</li>
+        <li>Web page attachments with fake sign-in forms, redirects or scrambled code</li>
+        <li>QR codes in pictures and inside PDFs, and where they really go</li>
+      </ul>
+      <p class="disclaimer">No checker catches everything, and a clean result doesn't prove a file is safe. If you weren't expecting a file, ask the sender through a channel you already trust.</p>
+    </section>
+  </main>
+
+  <script src="../shared/config.js"></script>
+  <script src="../shared/domain-utils.js"></script>
+  <script src="../shared/analyzer.js"></script>
+  <script src="../shared/qr.js"></script>
+  <script src="../shared/filecheck.js"></script>
+  <script src="scan.js"></script>
+</body>
+</html>

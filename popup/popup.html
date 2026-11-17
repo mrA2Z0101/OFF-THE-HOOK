@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Off the Hook</title>
+  <script src="../shared/brand.js" data-adopt></script>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Shared Off the Hook header (logo, wordmark, mode chip), same as every other surface -->
+  <header class="ot-bar">
+    <img class="ot-logo" src="../icons/icon48.png" alt="" width="30" height="30">
+    <h1 class="ot-title"><img class="ot-wordmark" src="../icons/wordmark.png" alt="Off the Hook" width="140" height="30"><span class="ot-title-text" aria-hidden="true">Off the Hook</span></h1>
+    <span id="mode" class="mode" aria-label="Detection mode">Rule-based</span>
+  </header>
+
+  <main>
+    <section id="verdict" class="verdict v-pending" aria-live="polite">
+      <span class="vicon" aria-hidden="true">?</span>
+      <div>
+        <div id="vlabel" class="vlabel">No email scanned</div>
+        <div id="vdetail" class="vscore">Open an email in Gmail or Outlook on the web.</div>
+        <div class="meter" role="presentation" id="meter" hidden><span id="meterFill"></span></div>
+      </div>
+    </section>
+
+    <div id="alert" class="alertbox" role="alert" hidden>
+      <div class="alerttitle"><span aria-hidden="true">⚠ </span>Possibly compromised coworker account</div>
+      <p>Ask the sender in person (or call a number you already know) before you reply, click, or send anything.</p>
+    </div>
+    <p id="counts" class="note lime" hidden></p>
+    <p id="aistatus" class="note" hidden></p>
+
+    <div class="actions">
+      <button id="toggle" type="button" disabled>Toggle highlights</button>
+      <button id="rescan" type="button" disabled>Re-scan</button>
+      <button id="filecheck" type="button" title="Check a downloaded attachment before you open it">Check a file</button>
+      <button id="learn" type="button" title="Short lessons on spotting phishing">Learn<span id="learnNew" class="newcount" hidden></span></button>
+      <button id="settings" type="button" class="primary">Settings</button>
+    </div>
+  </main>
+
+  <footer>
+    <p class="disclaimer">Advisory only. Results can be wrong in either direction. Always verify a request through a channel you already trust.</p>
+  </footer>
+  <script src="popup.js"></script>
+</body>
+</html>

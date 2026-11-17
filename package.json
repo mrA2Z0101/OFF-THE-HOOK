@@ -1,0 +1,14 @@
+{
+  "name": "off-the-hook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser extension that flags signs of phishing in Gmail and Outlook on the web.",
+  "scripts": {
+    "test": "node --test test/",
+    "icons": "python scripts/brand_server.py",
+    "build:firefox": "python scripts/build_firefox.py"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
