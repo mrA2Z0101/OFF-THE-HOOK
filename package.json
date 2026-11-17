@@ -4,9 +4,11 @@
   "private": true,
   "description": "Browser extension that flags signs of phishing in Gmail and Outlook on the web.",
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test test/analyzer.test.js",
     "icons": "python scripts/brand_server.py",
-    "build:firefox": "python scripts/build_firefox.py"
+    "build:firefox": "python scripts/build_firefox.py",
+    "build:zip": "python scripts/build_zip.py",
+    "store:art": "node scripts/store_assets.js"
   },
   "engines": {
     "node": ">=18"

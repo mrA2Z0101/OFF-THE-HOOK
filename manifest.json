@@ -3,7 +3,7 @@
   "name": "Off the Hook",
   "short_name": "Off the Hook",
   "version": "1.0.0",
-  "description": "Flags signs of phishing in the email you have open in Gmail or Outlook on the web. Works offline with built-in rules; optional AI mode.",
+  "description": "Flags signs of phishing in the email you have open in Gmail or Outlook on the web. Works offline with built-in rules; optional AI.",
   "minimum_chrome_version": "111",
   "icons": {
     "16": "icons/icon16.png",
